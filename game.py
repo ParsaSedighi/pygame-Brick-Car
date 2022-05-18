@@ -48,26 +48,26 @@ def get_player():
     return Object(2, -4, car)
 
 
-enemy_xpos = [2, 5]
-
-
 def get_enemy():
-    return Object(random.choice(enemy_xpos), 0, car)
+    return Object(random.choice([2, 5]), -4, car)
 
 
 player = get_player()
-enemy = get_enemy()
+all_enemies = []
 
 
-def get_object_pos(object):
+def get_object_pos(object, enemy=False):
     positions = []
     for y, row in enumerate(object.shape):
         for x, col in enumerate(row):
             if col == 1:
                 positions.append((object.y + y, object.x + x))
     for i, pos in enumerate(positions):
-        positions[i] = (pos[0], pos[1])
-    return positions
+        positions[i] = [pos[0], pos[1]]
+    if enemy:
+        all_enemies.extend(positions)
+    else:
+        return positions
 
 
 def draw_guide(surface, row, col):
@@ -94,9 +94,10 @@ tick_speed = 300
 pygame.time.set_timer(tick, tick_speed)
 
 spawn = pygame.USEREVENT+1
-spawn_time = tick_speed*4
+spawn_time = tick_speed*9
 pygame.time.set_timer(spawn, spawn_time)
 
+move_enemies = False
 while not done:
     grid = [[BG for _ in range(COL)] for _ in range(ROW)]
 
@@ -104,9 +105,12 @@ while not done:
         if event.type == pygame.QUIT:
             done = True
         if event.type == tick:
-            enemy.y += 1
+            if move_enemies:
+                for i in all_enemies:
+                    i[0] += 1
         if event.type == spawn:
-            pass
+            get_object_pos(get_enemy(), True)
+            move_enemies = True
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 player.x = 2
@@ -118,11 +122,13 @@ while not done:
         y, x = player_pos[i]
         grid[y][x] = player.color
 
-    enemy_pos = get_object_pos(enemy)
-    for i in range(len(enemy_pos)):
-        y, x = enemy_pos[i]
-        if y < ROW:
-            grid[y][x] = enemy.color
+    if move_enemies:
+        for i in all_enemies:
+            y, x = i
+            if y >= ROW:
+                all_enemies.remove(i)
+            if 0 <= y < ROW:
+                grid[y][x] = WHITE
 
     draw_window(SCREEN)
     draw_guide(SCREEN, ROW + 1, COL + 1)
