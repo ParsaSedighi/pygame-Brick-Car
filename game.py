@@ -1,4 +1,3 @@
-from cmath import log
 import random
 import pygame
 
