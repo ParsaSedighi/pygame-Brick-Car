@@ -48,11 +48,8 @@ def get_player():
     return Object(2, -4, car)
 
 
-enemy_xpos = [2, 5]
-
-
 def get_enemy():
-    return Object(random.choice(enemy_xpos), -4, car)
+    return Object(random.choice([2, 5]), -4, car)
 
 
 player = get_player()
