@@ -1,3 +1,4 @@
+import os
 import random
 import pygame
 
@@ -85,11 +86,17 @@ def draw_window(surface):
             pygame.draw.rect(surface, grid[y][x], (BLOCK_SIZE*M + x*BLOCK_SIZE,
                              BLOCK_SIZE*M + y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE))
 
-    # Score text
+    # Score texts
     font = pygame.font.SysFont("Calibri", 20)
-    text = font.render("Score: ", True, WHITE)
+    score_text = font.render("Score: ", True, WHITE)
+    score_point = font.render(str(round(score)), True, WHITE)
+    highscore_text = font.render("High Score: ", True, WHITE)
+    highscore_point = font.render(str(highscore), True, WHITE)
 
-    SCREEN.blit(text, (8, 8))
+    SCREEN.blit(score_text, (BLOCK_SIZE, 8))
+    SCREEN.blit(score_point, (BLOCK_SIZE*2.75, 8))
+    SCREEN.blit(highscore_text, (BLOCK_SIZE*7.5, 8))
+    SCREEN.blit(highscore_point, (BLOCK_SIZE*10.5, 8))
 
 
 ###############################################################################
@@ -109,13 +116,22 @@ INF = 999999999
 
 score = 0
 temp_score = 0
+
+############ High Score ############
+if not(os.path.exists("score.txt")):
+    open("score.txt", "w").write("0")
+file = open("score.txt", "r")
+highscore = file.readline()
+file.close()
+####################################
+
 while not done:
     SCREEN.fill(BLACK)
     grid = [[BG for _ in range(COL)] for _ in range(ROW)]
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            done = True
+            gameover = True
         if event.type == tick:
             if move_enemies:
                 for i in all_enemies:
@@ -148,11 +164,6 @@ while not done:
         temp_score = 0
 
     draw_window(SCREEN)
-
-    font = pygame.font.SysFont("Calibri", 20)
-    text = font.render(str(round(score)), True, WHITE)
-    SCREEN.blit(text, (BLOCK_SIZE*2, 8))
-
     draw_guide(SCREEN, ROW + 1, COL + 1)
 
     ############ GAME OVER ############
@@ -167,6 +178,13 @@ while not done:
             pygame.time.set_timer(tick, tick_speed)
             pygame.time.set_timer(spawn, spawn_time)
             gameover = True
+
+    if gameover:
+        if int(highscore) < score:
+            file = open("score.txt", "w")
+            file.write(str(score))
+            file.close
+        done = True
     ###################################
 
     pygame.display.flip()  # Draw the screen each frame
