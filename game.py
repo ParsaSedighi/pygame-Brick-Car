@@ -14,14 +14,7 @@ HEIGHT = ROW*BLOCK_SIZE + 2*M*BLOCK_SIZE
 BG = (0, 27, 46)  # Background Color
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
 GRAY = (128, 128, 128)
-ORANGE = (255, 215, 0)
-PURPLE = (127, 0, 255)
-YELLOW = (254, 198, 1)
-PINK = (255, 105, 180)
 
 # Shapes
 car = [
@@ -103,6 +96,9 @@ def draw_window(surface):
 done = False
 gameover = False
 
+score = 0
+temp_score = 0
+
 tick = pygame.USEREVENT
 tick_speed = 150
 pygame.time.set_timer(tick, tick_speed)
@@ -114,8 +110,9 @@ pygame.time.set_timer(spawn, spawn_time)
 move_enemies = False
 INF = 999999999
 
-score = 0
-temp_score = 0
+diff_score = 0
+
+change = False
 
 ############ High Score ############
 if not(os.path.exists("score.txt")):
@@ -156,6 +153,7 @@ while not done:
             if y >= ROW:
                 all_enemies.remove(i)
                 temp_score += 100/7
+                diff_score += 100/7
             if 0 <= y < ROW:
                 grid[y][x] = WHITE
 
@@ -173,10 +171,6 @@ while not done:
         temp_pos.append(player_under)
     for block in all_enemies:
         if block in temp_pos:
-            tick_speed = INF
-            spawn_time = tick_speed
-            pygame.time.set_timer(tick, tick_speed)
-            pygame.time.set_timer(spawn, spawn_time)
             gameover = True
 
     if gameover:
@@ -186,6 +180,17 @@ while not done:
             file.close
         done = True
     ###################################
+
+    if round(diff_score) == 500 and tick_speed > 50:
+        change = True
+
+    if change == True:
+        diff_score = 0
+        tick_speed -= 22
+        pygame.time.set_timer(tick, tick_speed)
+        spawn_time = tick_speed*9
+        pygame.time.set_timer(spawn, spawn_time)
+        change = False
 
     pygame.display.flip()  # Draw the screen each frame
 ###############################################################################
