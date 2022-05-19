@@ -85,9 +85,16 @@ def draw_window(surface):
             pygame.draw.rect(surface, grid[y][x], (BLOCK_SIZE*M + x*BLOCK_SIZE,
                              BLOCK_SIZE*M + y*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE))
 
+    # Score text
+    font = pygame.font.SysFont("Calibri", 20)
+    text = font.render("Score: ", True, WHITE)
+
+    SCREEN.blit(text, (8, 8))
+
 
 ###############################################################################
 done = False
+gameover = False
 
 tick = pygame.USEREVENT
 tick_speed = 150
@@ -100,7 +107,10 @@ pygame.time.set_timer(spawn, spawn_time)
 move_enemies = False
 INF = 999999999
 
+score = 0
+temp_score = 0
 while not done:
+    SCREEN.fill(BLACK)
     grid = [[BG for _ in range(COL)] for _ in range(ROW)]
 
     for event in pygame.event.get():
@@ -129,10 +139,20 @@ while not done:
             y, x = i
             if y >= ROW:
                 all_enemies.remove(i)
+                temp_score += 100/7
             if 0 <= y < ROW:
                 grid[y][x] = WHITE
 
+    if not(round(temp_score) % 100):
+        score += round(temp_score)
+        temp_score = 0
+
     draw_window(SCREEN)
+
+    font = pygame.font.SysFont("Calibri", 20)
+    text = font.render(str(round(score)), True, WHITE)
+    SCREEN.blit(text, (BLOCK_SIZE*2, 8))
+
     draw_guide(SCREEN, ROW + 1, COL + 1)
 
     ############ GAME OVER ############
@@ -146,6 +166,7 @@ while not done:
             spawn_time = tick_speed
             pygame.time.set_timer(tick, tick_speed)
             pygame.time.set_timer(spawn, spawn_time)
+            gameover = True
     ###################################
 
     pygame.display.flip()  # Draw the screen each frame
