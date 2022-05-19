@@ -45,7 +45,7 @@ class Object:
 
 
 def get_player():
-    return Object(2, -4, car)
+    return Object(2, ROW-4, car)
 
 
 def get_enemy():
@@ -98,6 +98,8 @@ spawn_time = tick_speed*9
 pygame.time.set_timer(spawn, spawn_time)
 
 move_enemies = False
+INF = 999999999
+
 while not done:
     grid = [[BG for _ in range(COL)] for _ in range(ROW)]
 
@@ -132,6 +134,14 @@ while not done:
 
     draw_window(SCREEN)
     draw_guide(SCREEN, ROW + 1, COL + 1)
+
+    # GAME OVER
+    for i in all_enemies:
+        if i == [player.y, player.x]:
+            tick_speed = INF
+            spawn_time = tick_speed
+            pygame.time.set_timer(tick, tick_speed)
+            pygame.time.set_timer(spawn, spawn_time)
 
     pygame.display.flip()  # Draw the screen each frame
 ###############################################################################
