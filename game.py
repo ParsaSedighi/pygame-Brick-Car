@@ -90,7 +90,7 @@ def draw_window(surface):
 done = False
 
 tick = pygame.USEREVENT
-tick_speed = 300
+tick_speed = 150
 pygame.time.set_timer(tick, tick_speed)
 
 spawn = pygame.USEREVENT+1
@@ -135,13 +135,18 @@ while not done:
     draw_window(SCREEN)
     draw_guide(SCREEN, ROW + 1, COL + 1)
 
-    # GAME OVER
-    for i in all_enemies:
-        if i == [player.y, player.x]:
+    ############ GAME OVER ############
+    player_under = [player.y+3, player.x+1]
+    temp_pos = player_pos
+    if player_under not in temp_pos:
+        temp_pos.append(player_under)
+    for block in all_enemies:
+        if block in temp_pos:
             tick_speed = INF
             spawn_time = tick_speed
             pygame.time.set_timer(tick, tick_speed)
             pygame.time.set_timer(spawn, spawn_time)
+    ###################################
 
     pygame.display.flip()  # Draw the screen each frame
 ###############################################################################
