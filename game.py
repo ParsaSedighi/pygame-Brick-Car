@@ -108,7 +108,6 @@ spawn_time = tick_speed*9
 pygame.time.set_timer(spawn, spawn_time)
 
 move_enemies = False
-INF = 999999999
 
 diff_score = 0
 
